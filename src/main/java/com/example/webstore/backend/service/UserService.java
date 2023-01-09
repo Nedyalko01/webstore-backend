@@ -6,6 +6,8 @@ import com.example.webstore.backend.model.LocalUser;
 import com.example.webstore.backend.model.dto.LocalUserDAO;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+
 @Service
 public class UserService {
 
@@ -32,5 +34,10 @@ public class UserService {
 
         user = localUserDAO.save(user);
         return user;
+    }
+
+    public List<LocalUser> getAllUsers() {
+        return localUserDAO.findAll();
+
     }
 }

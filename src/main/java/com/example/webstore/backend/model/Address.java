@@ -1,6 +1,9 @@
 package com.example.webstore.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
 
 @Entity
 @Table(name = "address")
@@ -22,9 +25,14 @@ public class Address {
     @Column(name = "country", nullable = false, length = 75)
     private String country;
 
+
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false )
+    @JsonBackReference
     private LocalUser user;
+
+    public Address() {
+    }
 
     public LocalUser getUser() {
         return user;
