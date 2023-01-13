@@ -1,6 +1,6 @@
 package com.example.webstore.backend.service;
 
-import com.example.webstore.backend.api.model.AddressSaveRequest;
+import com.example.webstore.backend.api.AddressSaveRequest;
 import com.example.webstore.backend.model.Address;
 import com.example.webstore.backend.model.dto.AddressDAO;
 import org.springframework.beans.factory.annotation.Autowired;

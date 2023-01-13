@@ -1,6 +1,7 @@
 package com.example.webstore.backend.api.controller.user;
 
 import com.example.webstore.backend.model.Address;
+import com.example.webstore.backend.model.LocalUser;
 import com.example.webstore.backend.model.dto.AddressDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,9 @@ public class UserController {
         this.addressDAO = addressDAO;
     }
 
+
     @GetMapping(value = "/{id}/address")
-    public ResponseEntity<List<Address>> getAddress(@PathVariable Long id) {
+    public ResponseEntity<List<Address>> getAddressByUser(@PathVariable Long id) {
 
         List<Address> user = addressDAO.findByUser_Id(id);
 

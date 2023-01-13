@@ -1,5 +1,7 @@
 package com.example.webstore.backend.api.controller;
 
+import com.example.webstore.backend.api.model.LoginBody;
+import com.example.webstore.backend.api.model.LoginResponse;
 import com.example.webstore.backend.api.model.RegistrationRequest;
 import com.example.webstore.backend.exception.UserAlreadyExistsException;
 import com.example.webstore.backend.model.Address;
@@ -30,7 +32,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity RegisterUser(@Valid @RequestBody RegistrationRequest request) {
+    public ResponseEntity<LocalUser> RegisterUser(@Valid @RequestBody RegistrationRequest request) {
 
         try {
             userService.registerUser(request);
@@ -40,6 +42,22 @@ public class AuthenticationController {
         }
 
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody) {
+        String jwt = userService.loginUser(loginBody);
+
+        if (jwt == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        } else {
+            LoginResponse response = new LoginResponse();
+            response.setJwt(jwt);
+            return ResponseEntity.ok(response);
+        }
+    }
+
+
 
     @GetMapping
     public List<LocalUser> getAllUsers() {
