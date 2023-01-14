@@ -1,5 +1,6 @@
 package com.example.webstore.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class LocalUser {
 
     @Column(name = "last_name", nullable = false)
     private String lastName;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
 

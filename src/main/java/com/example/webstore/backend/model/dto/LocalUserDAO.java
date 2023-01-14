@@ -17,4 +17,6 @@ public interface LocalUserDAO extends ListCrudRepository<LocalUser, Long> {
     @Override
     List<LocalUser> findAll();
 
+    void deleteById(Long id);
+
 }
