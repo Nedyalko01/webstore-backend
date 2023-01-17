@@ -15,7 +15,7 @@ public class ProductService {
         this.productDAO = productDAO;
     }
 
-    public List<Product> getProduct() {
+    public List<Product> getProducts() {
         return productDAO.findAll();
     }
 }

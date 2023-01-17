@@ -16,7 +16,7 @@ public class LocalUser {
 
     @Column(name = "username", nullable = false, unique = true)
     private String username;
-
+    @JsonIgnore
     @Column(name = "password", nullable = false, length = 1000)
     private String password;
 
