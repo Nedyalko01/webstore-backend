@@ -3,6 +3,7 @@ package com.example.webstore.backend.api.controller;
 import com.example.webstore.backend.api.model.LoginBody;
 import com.example.webstore.backend.api.model.LoginResponse;
 import com.example.webstore.backend.api.model.RegistrationRequest;
+import com.example.webstore.backend.exception.EmailFailureException;
 import com.example.webstore.backend.exception.UserAlreadyExistsException;
 import com.example.webstore.backend.model.Address;
 import com.example.webstore.backend.model.LocalUser;
@@ -41,6 +42,8 @@ public class AuthenticationController {
             return ResponseEntity.ok().build();
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (EmailFailureException e) {
+            throw new RuntimeException(e);
         }
 
     }
