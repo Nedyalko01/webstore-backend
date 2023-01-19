@@ -8,8 +8,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.util.EnumMap;
-
 @Service
 public class EmailService {
 
@@ -19,7 +17,6 @@ public class EmailService {
     @Value("${app.frontend.url}")
     private String url;
 
-    private static final String VERIFY_MAIL_MESSAGE = "Verify your email to activate your account.";
     private final JavaMailSender javaMailSender;
 
     public EmailService(JavaMailSender javaMailSender) {
@@ -39,8 +36,8 @@ public class EmailService {
 
         SimpleMailMessage message = makeMailMessage();
 
-        message.setTo(verificationToken.getLocalUser().getEmail());
-        message.setSubject(VERIFY_MAIL_MESSAGE);
+        message.setTo(verificationToken.getUser().getEmail());
+        message.setSubject("Verify your email to activate your account.");
         message.setText("Please follow the link bellow to verify your email to activate your account.\n" + url +
                 "/auth/verify?token=" + verificationToken.getToken());
 

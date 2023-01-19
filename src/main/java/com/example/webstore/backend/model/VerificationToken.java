@@ -23,11 +23,11 @@ public class VerificationToken {
     @JoinColumn(name = "user_id", nullable = false)
     private LocalUser user;
 
-    public LocalUser getLocalUser() {
+    public LocalUser getUser() {
         return user;
     }
 
-    public void setLocalUser(LocalUser user) {
+    public void setUser(LocalUser user) {
         this.user = user;
     }
 

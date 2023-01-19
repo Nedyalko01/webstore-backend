@@ -5,6 +5,7 @@ import com.example.webstore.backend.api.model.LoginResponse;
 import com.example.webstore.backend.api.model.RegistrationRequest;
 import com.example.webstore.backend.exception.EmailFailureException;
 import com.example.webstore.backend.exception.UserAlreadyExistsException;
+import com.example.webstore.backend.exception.UserNotVerifiedException;
 import com.example.webstore.backend.model.Address;
 import com.example.webstore.backend.model.LocalUser;
 import com.example.webstore.backend.model.dto.LocalUserDAO;
@@ -35,29 +36,57 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<LocalUser> RegisterUser(@Valid @RequestBody RegistrationRequest request) {
+    public ResponseEntity<LocalUser> registerUser(@Valid @RequestBody RegistrationRequest request) {
 
         try {
             userService.registerUser(request);
             return ResponseEntity.ok().build();
-        } catch (UserAlreadyExistsException e) {
+        } catch (UserAlreadyExistsException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (EmailFailureException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody) {
-        String jwt = userService.loginUser(loginBody);
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody)  {
+
+        String jwt = null;
+        try {
+            jwt = userService.loginUser(loginBody);
+        } catch (UserNotVerifiedException ex) {
+            LoginResponse response = new LoginResponse();
+            response.setSuccess(false);
+            String reason = "USER_NOT_VERIFIED";
+
+            if (ex.isNewEmailSend()) {
+                reason += "EMAIL_RESEND";
+            }
+            response.setFailureReason(reason);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+
+        } catch (EmailFailureException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 
         if (jwt == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } else {
             LoginResponse response = new LoginResponse();
             response.setJwt(jwt);
+            response.setSuccess(true);
             return ResponseEntity.ok(response);
+        }
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity verifyEmail(@RequestParam String token) {
+
+        if(userService.verifyUser(token)) {
+          return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
 
