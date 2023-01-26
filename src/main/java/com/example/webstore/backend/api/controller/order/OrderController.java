@@ -22,7 +22,7 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<WebOrder> getOrders(@AuthenticationPrincipal     LocalUser user) {
+    public List<WebOrder> getOrders(@AuthenticationPrincipal LocalUser user) {
         return orderService.getOrders(user);
     }
 }

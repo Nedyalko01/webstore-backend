@@ -19,6 +19,11 @@ public class ProductService {
         return productDAO.findAll();
     }
 
-
-
+    public Product findOneById(Long id) {
+      return  productDAO.findAll()
+              .stream()
+              .filter(product -> product.getId() == id)
+              .findFirst().orElseThrow(()  -> new RuntimeException("Product not found"));
     }
+
+}

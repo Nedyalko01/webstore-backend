@@ -1,7 +1,6 @@
 package com.example.webstore.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 
@@ -33,6 +32,8 @@ public class Address {
 
     public Address() {
     }
+
+
 
     public LocalUser getUser() {
         return user;
