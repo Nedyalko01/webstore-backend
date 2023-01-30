@@ -11,9 +11,6 @@ public class WebStoreBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(WebStoreBackendApplication.class, args);
 	}
-		@Bean
-		Faker faker() {
-			return new Faker();
-		}
+
 	}
 
