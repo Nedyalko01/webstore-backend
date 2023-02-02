@@ -44,15 +44,17 @@ public class JWTRequestFilter extends OncePerRequestFilter {
             try {
                 String username = jwtService.getUsername(token);
                 Optional<LocalUser> optionalUser = localUserDAO.findByUsernameIgnoreCase(username);
-                if (optionalUser.isPresent()){
+                if (optionalUser.isPresent()) {
                     LocalUser user = optionalUser.get();
 
-                    UsernamePasswordAuthenticationToken authentication
-                            = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                    if (user.isEmailVerified()) {
+                        UsernamePasswordAuthenticationToken authentication
+                                = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
 
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
 
             } catch (JWTDecodeException ex) {
