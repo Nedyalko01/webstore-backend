@@ -27,7 +27,7 @@ public class JWTRequestFilterTest {
     @Autowired
     private LocalUserDAO localUserDAO;
 
-    private static final String AUTHENTICATED_PATH = "/auth/v1";
+    private static final String AUTHENTICATED_PATH = "/auth/access";
 
     @Test
     public void unauthenticatedRequest() throws Exception {

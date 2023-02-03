@@ -6,7 +6,6 @@ import com.example.webstore.backend.api.model.RegistrationRequest;
 import com.example.webstore.backend.exception.EmailFailureException;
 import com.example.webstore.backend.exception.UserAlreadyExistsException;
 import com.example.webstore.backend.exception.UserNotVerifiedException;
-import com.example.webstore.backend.model.Address;
 import com.example.webstore.backend.model.LocalUser;
 import com.example.webstore.backend.model.dto.LocalUserDAO;
 import com.example.webstore.backend.service.UserService;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -90,7 +88,7 @@ public class AuthenticationController {
         }
     }
 
-    @GetMapping("/v1")
+    @GetMapping("/access")
     public LocalUser getLoggedInUserProfile(@AuthenticationPrincipal LocalUser user) {
         return user;
 
