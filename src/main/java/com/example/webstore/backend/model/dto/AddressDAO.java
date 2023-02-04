@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface AddressDAO extends ListCrudRepository<Address, Long> {
 
-    List<Address> findByUser_Id(Long id);
+    Optional<Address> findByUser_Id(Long id);
 
     @Override
     List<Address> findAll();

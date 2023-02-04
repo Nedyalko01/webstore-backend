@@ -26,7 +26,7 @@ public class Address {
 
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false )
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private LocalUser user;
 
