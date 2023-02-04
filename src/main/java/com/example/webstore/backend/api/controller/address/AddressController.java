@@ -1,14 +1,10 @@
 package com.example.webstore.backend.api.controller.address;
 
 import com.example.webstore.backend.model.Address;
-import com.example.webstore.backend.model.LocalUser;
 import com.example.webstore.backend.model.dto.AddressDAO;
 import com.example.webstore.backend.service.AddressService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,7 +47,7 @@ public class AddressController {
 
 
     @GetMapping
-    public List<Address> getAddresses() {
+    public List<Address> getAllAddresses() {
         return addressService.getAddress();
     }
 
