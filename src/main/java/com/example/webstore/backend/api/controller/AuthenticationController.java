@@ -2,8 +2,10 @@ package com.example.webstore.backend.api.controller;
 
 import com.example.webstore.backend.api.model.LoginBody;
 import com.example.webstore.backend.api.model.LoginResponse;
+import com.example.webstore.backend.api.model.PasswordResetRequest;
 import com.example.webstore.backend.api.model.RegistrationRequest;
 import com.example.webstore.backend.exception.EmailFailureException;
+import com.example.webstore.backend.exception.EmailNotFoundException;
 import com.example.webstore.backend.exception.UserAlreadyExistsException;
 import com.example.webstore.backend.exception.UserNotVerifiedException;
 import com.example.webstore.backend.model.LocalUser;
@@ -33,7 +35,7 @@ public class AuthenticationController {
         this.localUserDAO = localUserDAO;
     }
 
-    @PostMapping("/register")
+    @PostMapping(value = "/register")
     public ResponseEntity<LocalUser> registerUser(@Valid @RequestBody RegistrationRequest request) {
 
         try {
@@ -47,8 +49,8 @@ public class AuthenticationController {
 
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody)  {
+    @PostMapping(value = "/login")
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody) {
 
         String jwt = null;
         try {
@@ -78,22 +80,44 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("/verify")
+    @PostMapping(value = "/verify")
     public ResponseEntity verifyEmail(@RequestParam String token) {
 
-        if(userService.verifyUser(token)) {
-          return ResponseEntity.ok().build();
+        if (userService.verifyUser(token)) {
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
 
-    @GetMapping("/access")
+    @GetMapping(value = "/access")
     public LocalUser getLoggedInUserProfile(@AuthenticationPrincipal LocalUser user) {
         return user;
 
         // SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
+
+    @PostMapping(value = "/forgot")
+    public ResponseEntity forgotPassword(@RequestParam String email) {
+        try {
+            userService.forgotPassword(email);
+            return ResponseEntity.ok().build();
+        } catch (EmailNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EmailFailureException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+    }
+
+    @PostMapping(value = "/reset")
+    public ResponseEntity resetPassword(@Valid @RequestBody PasswordResetRequest request) {
+
+        userService.resetPassword(request);
+
+        return ResponseEntity.ok().build();
+    }
+
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteById(@PathVariable Long id) {

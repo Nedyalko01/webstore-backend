@@ -61,4 +61,15 @@ public class JWTServiceTest {
         Assertions.assertThrows(MissingClaimException.class, () -> jwtService.getUsername(token));
 
     }
+    @Test
+    public void testResetToken() {
+
+        LocalUser user = localUserDAO.findByUsernameIgnoreCase("UserA").get();
+
+        String token = jwtService.generatePasswordResetJWT(user);
+
+        Assertions.assertEquals(user.getEmail(), jwtService.getResetPasswordEmail(token), "Email should match inside" + "Jwt");
+
+
+    }
 }

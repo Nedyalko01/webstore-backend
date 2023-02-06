@@ -1,8 +1,10 @@
 package com.example.webstore.backend.service;
 
 import com.example.webstore.backend.api.model.LoginBody;
+import com.example.webstore.backend.api.model.PasswordResetRequest;
 import com.example.webstore.backend.api.model.RegistrationRequest;
 import com.example.webstore.backend.exception.EmailFailureException;
+import com.example.webstore.backend.exception.EmailNotFoundException;
 import com.example.webstore.backend.exception.UserAlreadyExistsException;
 import com.example.webstore.backend.exception.UserNotVerifiedException;
 import com.example.webstore.backend.model.LocalUser;
@@ -13,7 +15,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -119,5 +122,31 @@ public class UserService {
     public List<LocalUser> getAllUsers() {
         return localUserDAO.findAll();
 
+    }
+
+    public void forgotPassword(String email) throws EmailNotFoundException, EmailFailureException {
+
+        Optional<LocalUser> optionalUser = localUserDAO.findByEmailIgnoreCase(email);
+
+        if (optionalUser.isPresent()) {
+            LocalUser user = optionalUser.get();
+            String token = jwtService.generatePasswordResetJWT(user);
+            emailService.sendPasswordResetEmail(user, token);
+        } else {
+            throw new EmailNotFoundException();
+        }
+    }
+
+    public void resetPassword(PasswordResetRequest request) {
+
+        String email = jwtService.getResetPasswordEmail(request.getToken());
+
+        Optional<LocalUser> optionalUser = localUserDAO.findByEmailIgnoreCase(email);
+
+        if (optionalUser.isPresent()) {
+            LocalUser user = optionalUser.get();
+            user.setPassword(encryptionService.encryptPassword(request.getPassword()));
+            localUserDAO.save(user);
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.example.webstore.backend.service;
 import com.example.webstore.backend.api.model.LoginBody;
 import com.example.webstore.backend.api.model.RegistrationRequest;
 import com.example.webstore.backend.exception.EmailFailureException;
+import com.example.webstore.backend.exception.EmailNotFoundException;
 import com.example.webstore.backend.exception.UserAlreadyExistsException;
 import com.example.webstore.backend.exception.UserNotVerifiedException;
 import com.example.webstore.backend.model.VerificationToken;
@@ -12,7 +13,6 @@ import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
-import jakarta.servlet.Registration;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ public class UserServiceTest {
 
     @Test
     @Transactional
-    public void TestRegisterUser() throws MessagingException {
+    public void testRegisterUser() throws MessagingException {
         RegistrationRequest body = new RegistrationRequest();
 
         body.setUsername("UserA");
@@ -99,9 +99,10 @@ public class UserServiceTest {
             Assertions.assertEquals(1, greenMailExtension.getReceivedMessages().length);
         }
     }
+
     @Test
     @Transactional
-    public void verifyUser() throws EmailFailureException {
+    public void tesVerifyUser() throws EmailFailureException {
         Assertions.assertFalse(userService.verifyUser("Bad Token"), "Token is bad or does not exist should return false");
         LoginBody body = new LoginBody();
         body.setUsername("UserB");
@@ -115,5 +116,18 @@ public class UserServiceTest {
             Assertions.assertTrue(userService.verifyUser(token), "Token should be valid");
             Assertions.assertNotNull(body, "The user should now be verified");
         }
+    }
+
+    @Test
+    @Transactional
+    public void forgotPassword() throws MessagingException {
+        Assertions.assertThrows(EmailNotFoundException.class, () -> userService.forgotPassword("UserNotExists@junit.comn"));
+
+        Assertions.assertDoesNotThrow(() -> userService.forgotPassword("UserA@junit.com"));
+
+        Assertions.assertEquals("UserA@junit.com",
+                greenMailExtension.getReceivedMessages()[0]
+                        .getRecipients(Message.RecipientType.TO)[0].toString());
+
     }
 }
