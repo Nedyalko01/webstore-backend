@@ -19,7 +19,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/auth")
@@ -53,6 +52,7 @@ public class AuthenticationController {
     public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody) {
 
         String jwt = null;
+
         try {
             jwt = userService.loginUser(loginBody);
         } catch (UserNotVerifiedException ex) {
@@ -118,16 +118,6 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
-
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Long id) {
-        try {
-            localUserDAO.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            throw new NoSuchElementException("No such Address");
-        }
-    }
 
     @GetMapping
     public List<LocalUser> getAllUsers() {

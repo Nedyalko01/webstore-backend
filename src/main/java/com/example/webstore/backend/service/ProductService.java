@@ -26,4 +26,8 @@ public class ProductService {
               .findFirst().orElseThrow(()  -> new RuntimeException("Product not found"));
     }
 
+    public Product addProduct(Product product) {
+        return productDAO.save(product);
+    }
+
 }

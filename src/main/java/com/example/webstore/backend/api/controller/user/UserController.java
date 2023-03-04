@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -28,62 +29,69 @@ public class UserController {
     }
 
 
-    @GetMapping(value = "/{id}/address")
-    public ResponseEntity<Optional<Address>> getAddressByUser(@AuthenticationPrincipal LocalUser user, @PathVariable Long id) {
-
-        if (!userHasPermission(user, id)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        Optional<Address> userAddress = addressDAO.findById(id);
-
-        return new ResponseEntity<>(userAddress, HttpStatus.OK);
-    }
 
     private boolean userHasPermission(LocalUser user, Long id) {
         return user.getId() == id;
     }
 
-    @PutMapping(value = "/{id}/address")
-    public ResponseEntity<Address> updateAddress(@AuthenticationPrincipal LocalUser user,
-                                                 @PathVariable Long id,
-                                                 @RequestBody Address address) {
 
-        if (!userHasPermission(user, id)) {
+    @GetMapping(value = "/{userId}/address")
+    public ResponseEntity<List<Address>> getAddressesByLoggedUser(@AuthenticationPrincipal LocalUser user, @PathVariable Long userId) {
+
+        if (!userHasPermission(user, userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        address.setId(null);
 
-        LocalUser refUser = new LocalUser();
-        refUser.setId(id);
-        address.setUser(refUser);
+        List<Address> userAddress = addressDAO.findByUser_Id(userId);
 
-        Address updatedAddress = addressDAO.save(address);
+        return new ResponseEntity<>(userAddress, HttpStatus.OK);
+    }
+
+
+
+    @PutMapping(value = "/{userId}/address")
+    public ResponseEntity<Address> putAddressToUser(@AuthenticationPrincipal LocalUser user,
+                                                 @PathVariable Long userId,
+                                                 @RequestBody Address addressToUpdate) {
+
+        if (!userHasPermission(user, userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        addressToUpdate.setId(null);
+
+        LocalUser fakeUser = new LocalUser();
+
+        fakeUser.setId(userId);
+
+        addressToUpdate.setUser(fakeUser);
+
+        Address updatedAddress = addressDAO.save(addressToUpdate);
 
         return new ResponseEntity<>(updatedAddress, HttpStatus.OK);
     }
 
-    @PatchMapping(value = "/{id}/address/{addressId}")
-    public ResponseEntity<Address> patchAddress(@AuthenticationPrincipal LocalUser user,
-                                                @PathVariable Long id,
-                                                @PathVariable Long addressId,
-                                                @RequestBody Address address) {
 
-        if (!userHasPermission(user, id)) {
+    @PatchMapping(value = "/{userId}/address/{addressId}")
+    public ResponseEntity<Address> patchAddress(@AuthenticationPrincipal LocalUser user,
+                                                @PathVariable Long userId,
+                                                @PathVariable Long addressId,
+                                                @RequestBody Address addressToPatch) {
+
+        if (!userHasPermission(user, userId)) { // проверка дали AuthenticationPrincipal LocalUser user има права за промяна
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        if (address.getId() == (addressId)) {
-            Optional<Address> originalAddress = addressDAO.findById(addressId);
+        if (addressToPatch.getId() == (addressId)) { // адреса за промяна е == на адреса в Url
+            Optional<Address> originalAddress = addressDAO.findById(addressId); // вземи оригиналния адрес ако съществува
 
-            if (originalAddress.isPresent()) {
-                LocalUser originalUser = originalAddress.get().getUser();
+            if (originalAddress.isPresent()) { // ако оригиналния адрес съществува - вземи му originalUser
+                LocalUser originalUser = originalAddress.get().getUser(); //
 
+                if (originalUser.getId() == userId) {
+                    addressToPatch.setUser(originalUser);
 
-                if (originalUser.getId() == id) {
-                    address.setUser(originalUser);
-
-                    Address patchedAddress = addressDAO.save(address);
+                    Address patchedAddress = addressDAO.save(addressToPatch);
 
                    return new ResponseEntity<>(patchedAddress, HttpStatus.OK);
                 }
@@ -93,14 +101,26 @@ public class UserController {
     }
 
 
+
     @GetMapping
-    public ResponseEntity <List<LocalUser>> getUser() {
+    public ResponseEntity <List<LocalUser>> getUsers() {
 
         List<LocalUser> byUsernameIgnoreCase = userDAO.findAll();
 
         return new ResponseEntity<>(byUsernameIgnoreCase, HttpStatus.OK);
 
     }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<String> deleteById(@PathVariable Long id) {
+        try {
+            userDAO.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NoSuchElementException("No such User");
+        }
+    }
+
 }
 
 

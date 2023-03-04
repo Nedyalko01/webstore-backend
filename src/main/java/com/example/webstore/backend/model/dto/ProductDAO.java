@@ -6,4 +6,6 @@ import org.springframework.data.repository.ListCrudRepository;
 public interface ProductDAO extends ListCrudRepository<Product, Long> {
 
     Product findProductById(Long id);
+
+    Product save (Product product);
 }

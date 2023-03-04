@@ -39,12 +39,14 @@ public class LocalUser implements UserDetails {
     @OrderBy("id desc")
     private List<VerificationToken> verificationTokens = new ArrayList<>();
 
+    @Column(name = "email_verified", nullable = false)
+    private Boolean emailVerified = false;
+
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @Column(name = "email_verified", nullable = false)
-    private Boolean emailVerified = false;
+
 
     public Boolean isEmailVerified() {
         return emailVerified;

@@ -28,7 +28,7 @@ public class AddressController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<Optional<Address>> findById(@PathVariable Long id) {
 
-        Optional<Address> find = addressService.findById(id);
+        Optional<Address> find = addressDAO.findById(id);
 
         return new ResponseEntity<>(find, HttpStatus.OK);
     }
