@@ -52,21 +52,21 @@ public class UserController {
     @PutMapping(value = "/{userId}/address")
     public ResponseEntity<Address> putAddressToUser(@AuthenticationPrincipal LocalUser user,
                                                  @PathVariable Long userId,
-                                                 @RequestBody Address addressToUpdate) {
+                                                 @RequestBody Address address) {
 
         if (!userHasPermission(user, userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        addressToUpdate.setId(null);
+        address.setId(null);
 
         LocalUser fakeUser = new LocalUser();
 
         fakeUser.setId(userId);
 
-        addressToUpdate.setUser(fakeUser);
+        address.setUser(fakeUser);
 
-        Address updatedAddress = addressDAO.save(addressToUpdate);
+        Address updatedAddress = addressDAO.save(address);
 
         return new ResponseEntity<>(updatedAddress, HttpStatus.OK);
     }
