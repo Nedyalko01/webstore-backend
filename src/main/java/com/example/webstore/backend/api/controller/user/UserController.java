@@ -78,14 +78,14 @@ public class UserController {
                                                 @PathVariable Long addressId,
                                                 @RequestBody Address addressToPatch) {
 
-        if (!userHasPermission(user, userId)) { // проверка дали AuthenticationPrincipal LocalUser user има права за промяна
+        if (!userHasPermission(user, userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        if (addressToPatch.getId() == (addressId)) { // адреса за промяна е == на адреса в Url
-            Optional<Address> originalAddress = addressDAO.findById(addressId); // вземи оригиналния адрес ако съществува
+        if (addressToPatch.getId() == (addressId)) {
+            Optional<Address> originalAddress = addressDAO.findById(addressId);
 
-            if (originalAddress.isPresent()) { // ако оригиналния адрес съществува - вземи му originalUser
+            if (originalAddress.isPresent()) {
                 LocalUser originalUser = originalAddress.get().getUser(); //
 
                 if (originalUser.getId() == userId) {
